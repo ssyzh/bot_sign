@@ -1,0 +1,38 @@
+name: tele-signin
+
+on:
+  schedule:
+    - cron: "*/15 0-3 * * *"
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    env:
+      TELE_API_ID: ${{ secrets.TELE_API_ID }}
+      TELE_API_HASH: ${{ secrets.TELE_API_HASH }}
+      TELE_SESSION_STRING: ${{ secrets.TELE_SESSION_STRING }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - id: pick
+        run: python - <<'PY'
+import hashlib
+import os
+from datetime import datetime, timezone
+
+now = datetime.now(timezone.utc)
+slot = (now.hour * 60 + now.minute) // 15
+seed = f"{os.getenv('GITHUB_REPOSITORY','')}-{now.strftime('%Y%m%d')}"
+pick = int(hashlib.sha256(seed.encode()).hexdigest(), 16) % 16
+run = "true" if slot == pick else "false"
+print(f"utc={now.isoformat()} slot={slot} pick={pick} run={run}")
+with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
+    f.write(f"run={run}\n")
+PY
+      - if: steps.pick.outputs.run == 'true'
+        run: python -m pip install telethon pysocks
+      - if: steps.pick.outputs.run == 'true'
+        run: python bot_signin.py

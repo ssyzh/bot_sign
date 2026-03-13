@@ -1,0 +1,22 @@
+{
+  "api_id": 0,
+  "api_hash": "",
+  "session": "session_name",
+  "session_string": "",
+  "bots": [
+    {
+      "name": "KLemby_bot",
+      "command": "/start",
+      "steps": ["签到"]
+    }
+  ],
+  "poll_interval_seconds": 1,
+  "poll_retries": [2, 6],
+  "poll_max_attempts": 20,
+  "post_click_delay_seconds": 1,
+  "proxy": {
+    "type": "socks5",
+    "addr": "127.0.0.1",
+    "port": 7897
+  }
+}
