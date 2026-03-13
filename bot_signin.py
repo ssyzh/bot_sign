@@ -42,7 +42,6 @@ async def click_button_by_text(
     messages = await client.get_messages(bot_name, limit=5)
     print(f"[{bot_name}] 拉取到 {len(messages)} 条消息")
     for message in messages:
-        print(f"[{bot_name}] 消息ID: {message}")
         if message.message:
             preview = message.message.replace("\n", " ")[:80]
             print(f"[{bot_name}] 消息预览: {preview}")
